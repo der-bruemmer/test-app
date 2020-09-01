@@ -1,0 +1,6 @@
+image: alpine:latest
+
+print-variables:
+  script:
+    - export
+
