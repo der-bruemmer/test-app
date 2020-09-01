@@ -1,27 +1,17 @@
 image: alpine:latest
 
-variables:
-  CI_IS_MASTER_TAG: "false"
-
-stages:
-  - init
-  - test
-
-print-variables:
-  stage: test
-  needs: ["find-master-tag"]
-  script:
-    - export
-
+# this looks like a problem: https://gitlab.com/gitlab-org/gitlab-runner/-/issues/4557.
+# I'm addressing it doing an additional git fetch
 find-master-tag:
-  stage: init
   script: |
     apk update && apk upgrade && apk add git
+    git fetch
     if [ -n "$CI_COMMIT_TAG" ]; then
       tagged_commit=$(git rev-parse $CI_COMMIT_TAG^{commit})
       if git rev-list --first-parent origin/master -- | grep $CI_COMMIT_SHA >/dev/null; then
-        echo "$tag points to a commit reachable via first-parent from master"
-        CI_IS_MASTER_TAG="true"
+        echo "$CI_COMMIT_TAG points to a commit reachable via first-parent from master"
+      else
+        echo "$CI_COMMIT_TAG not on master"
       fi
     else
       echo "Not a tag"
