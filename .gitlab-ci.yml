@@ -19,7 +19,7 @@ find-master-tag:
     apk update && apk upgrade && apk add git
     if [ -n "$CI_COMMIT_TAG" ]; then
       tagged_commit=$(git rev-parse $CI_COMMIT_TAG^{commit})
-      if git rev-list --first-parent origin/master | grep $CI_COMMIT_SHA >/dev/null; then
+      if git rev-list --first-parent master -- | grep $CI_COMMIT_SHA >/dev/null; then
         echo "$tag points to a commit reachable via first-parent from master"
         CI_IS_MASTER_TAG="true"
       fi
