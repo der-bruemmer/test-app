@@ -1,6 +1,20 @@
 image: alpine:latest
 
+variables:
+  CI_IS_MASTER_TAG: "false"
+
 print-variables:
   script:
     - export
 
+before-script:
+  script: |
+    if [ -n "$CI_COMMIT_TAG" ]
+      tagged_commit=$(git rev-parse $CI_COMMIT_TAG^{commit})
+      if git rev-list --first-parent master | grep $CI_COMMIT_SHA >/dev/null; then
+        echo "$tag points to a commit reachable via first-parent from master"
+        CI_IS_MASTER_TAG="true"
+      fi
+    else
+      echo "Not a tag"
+    fi
